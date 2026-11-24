@@ -1,0 +1,5 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Operator Log</title>
+<style>body{margin:0;background:#f6f7f5;color:#222;font-family:ui-monospace,monospace}main{max-width:980px;margin:36px auto;padding:0 20px}.card{background:#fff;border:1px solid #e5e7e2;border-radius:16px;padding:20px}button,a{display:inline-block;padding:9px 12px;border-radius:9px;border:1px solid #ddd;background:#fff;color:#222;text-decoration:none;margin-right:8px}pre{background:#11151a;color:#dce2e9;border-radius:12px;padding:18px;min-height:430px;overflow:auto}</style></head>
+<body><main><div class="card"><h1>Operator Log</h1><p>Tracks tab navigation, ID hovers, cart additions, and final order confirmation.</p><button onclick="render()">Refresh</button><button onclick="localStorage.removeItem('luma_shop_events');render()">Clear log</button><a href="index.html">Back to shop</a><pre id="log"></pre></div></main>
+<script>function render(){document.getElementById("log").textContent=JSON.stringify(JSON.parse(localStorage.getItem("luma_shop_events")||"[]"),null,2)}render()</script></body></html>

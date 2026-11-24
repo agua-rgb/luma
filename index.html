@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Luma Shop</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --purple:#5d2bc4;
+  --purple-dark:#30244f;
+  --bg:#f7f8fb;
+  --text:#121426;
+  --muted:#73798b;
+  --line:#e5e7ee;
+}
+body{
+  margin:0;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+header{
+  height:78px;
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  display:grid;
+  grid-template-columns:240px 1fr 310px;
+  align-items:center;
+  gap:24px;
+  padding:0 38px;
+  position:sticky;
+  top:0;
+  z-index:30;
+}
+.brand{display:flex;align-items:center;gap:14px;font-size:27px;font-weight:900}
+.brandMark{
+  width:38px;height:38px;border-radius:9px;
+  background:linear-gradient(145deg,#7a42dc,#4c20aa);
+  display:grid;place-items:center;color:#fff;font-size:20px;
+  box-shadow:0 6px 16px #6a3cc033;
+}
+.search{position:relative}
+.search input{
+  width:100%;padding:13px 18px 13px 46px;
+  border:1px solid #dfe2ea;border-radius:999px;background:#fafbfe;
+  font:inherit;font-size:15px;outline:none;
+}
+.search span{position:absolute;left:17px;top:11px;font-size:19px}
+.headActions{display:flex;justify-content:flex-end;gap:26px;align-items:center;font-weight:700}
+.cartTop{position:relative;cursor:pointer}
+.badge{
+  position:absolute;right:-12px;top:-10px;background:#6d28d9;color:#fff;
+  width:21px;height:21px;border-radius:50%;display:grid;place-items:center;font-size:11px
+}
+.layout{
+  max-width:1500px;margin:26px auto;padding:0 28px;
+  display:grid;grid-template-columns:minmax(0,1fr) 325px;gap:24px;
+}
+.main{min-width:0}
+.tabs{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;
+}
+.tab{
+  height:66px;border:0;border-radius:14px;background:#eef0f4;color:#121426;
+  font-size:17px;font-weight:850;cursor:pointer;
+}
+.tab.active{
+  background:linear-gradient(135deg,#3b2a62,#2e234f);
+  color:#fff;
+  box-shadow:0 8px 20px #2f245022;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:22px;
+}
+.hidden{display:none!important}
+.card{
+  background:#fff;border:1px solid #e2e5ec;border-radius:17px;overflow:hidden;
+  box-shadow:0 2px 7px #0000000b;transition:.2s ease;
+}
+.card:hover{transform:translateY(-2px);box-shadow:0 14px 34px #20243513}
+.photo{
+  width:100%;aspect-ratio:1.75/1;object-fit:cover;display:block;
+  background:#eceef3;
+}
+.content{padding:14px 14px 12px}
+.name{font-size:17px;font-weight:900;margin:0 0 7px}
+.idline{font-size:14px;color:#747b89;margin-bottom:12px}
+.product-id{
+  position:relative;
+  display:inline-block;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:#5e6675;
+  font-weight:750;
+  border-bottom:1px dotted #9fa5af;
+}
+.product-id:hover::after{
+  content:"Full ID: " attr(data-full-id);
+  position:absolute;z-index:50;left:50%;bottom:calc(100% + 8px);
+  transform:translateX(-50%);
+  white-space:nowrap;
+  background:#111827;color:#fff;padding:8px 10px;border-radius:8px;font-size:12px;
+  box-shadow:0 8px 20px #0004;
+}
+.bottom{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.price{font-size:21px;font-weight:900}
+.add{
+  border:0;border-radius:9px;background:linear-gradient(135deg,#4d346d,#2e2449);
+  color:#fff;padding:10px 15px;font-weight:850;cursor:pointer;
+}
+.cartPanel{
+  background:#fff;border:1px solid #e1e4eb;border-radius:16px;
+  min-height:690px;position:sticky;top:104px;overflow:hidden;
+}
+.cartHead{padding:20px;border-bottom:1px solid #e5e7ee;font-size:20px;font-weight:900}
+.cartBody{padding:20px}
+.empty{
+  height:500px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;color:#73798b;
+}
+.emptyIcon{font-size:64px;color:#c4c9d3;margin-bottom:10px}
+.empty strong{color:#15182a;font-size:19px;margin-bottom:4px}
+.cartItem{
+  display:flex;gap:11px;padding:12px 0;border-bottom:1px solid #eee;
+}
+.cartThumb{width:68px;height:54px;object-fit:cover;border-radius:8px}
+.cartInfo{flex:1}
+.cartInfo b{display:block;font-size:14px}
+.cartPrice{font-weight:900}
+.total{
+  display:flex;justify-content:space-between;margin-top:18px;padding-top:15px;
+  border-top:1px solid #e5e7ee;font-weight:900;font-size:19px;
+}
+.checkout{
+  width:100%;margin-top:14px;border:0;border-radius:10px;background:#5b2bc2;color:#fff;
+  padding:13px;font-weight:900;cursor:pointer;
+}
+.overlay{
+  position:fixed;inset:0;background:#10152666;display:grid;place-items:center;
+  z-index:100;padding:20px;
+}
+.ticket{
+  width:min(430px,100%);
+  background:#fffdf4;color:#242424;
+  padding:26px 28px;
+  font-family:"Courier New",ui-monospace,monospace;
+  position:relative;
+  box-shadow:0 28px 90px #0005;
+}
+.ticket:before,.ticket:after{
+  content:"";position:absolute;left:0;width:100%;height:13px;
+  background:radial-gradient(circle at 6.5px 6.5px,transparent 6px,#fffdf4 6.5px) 0 0/13px 13px repeat-x;
+}
+.ticket:before{top:-13px;transform:rotate(180deg)} .ticket:after{bottom:-13px}
+.ticket h2{text-align:center;margin:0;font-size:25px}
+.ticketSub{text-align:center;color:#6c6c6c;font-size:11px;margin:5px 0 18px}
+.ticket hr{border:0;border-top:1px dashed #8b8b8b;margin:14px 0}
+.ticketRow{display:flex;justify-content:space-between;gap:12px;margin:8px 0}
+.ticketId{font-weight:900;letter-spacing:.04em}
+.ticket button{width:100%;margin-top:14px;border:0;background:#222;color:#fff;padding:11px;border-radius:7px;font-weight:800}
+.operator{position:fixed;left:16px;bottom:16px;z-index:40}
+.operator a{font-size:11px;text-decoration:none;background:#fff;color:#7b8190;border:1px solid #ddd;padding:7px 10px;border-radius:999px}
+@media(max-width:1150px){
+  .layout{grid-template-columns:1fr}.cartPanel{position:static;min-height:auto}
+}
+@media(max-width:850px){
+  header{grid-template-columns:1fr auto}.search{display:none}.headActions span:first-child{display:none}
+  .grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:560px){
+  .grid{grid-template-columns:1fr}.tabs{grid-template-columns:1fr}.layout{padding:0 14px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="brandMark">🛍</div>Luma Shop</div>
+  <div class="search"><span>⌕</span><input placeholder="Search for products, brands and more..."></div>
+  <div class="headActions"><span>♙ &nbsp;Sign In</span><span class="cartTop" onclick="scrollToCart()">🛒<span id="badge" class="badge">0</span></span></div>
+</header>
+
+<div class="layout">
+  <main class="main">
+    <div class="tabs">
+      <button class="tab active" onclick="showTab(0,this)">☆ &nbsp; Featured</button>
+      <button class="tab" onclick="showTab(1,this)">✧ &nbsp; New Arrivals</button>
+      <button class="tab" onclick="showTab(2,this)">▦ &nbsp; All Products</button>
+    </div>
+
+    <section class="grid panel" data-tab="0">
+      <article class="card" data-id="4827319654" data-name="Arc Max Headphones" data-price="149" data-img="assets/headphones.jpg">
+        <img class="photo" src="assets/headphones.jpg">
+        <div class="content"><div class="name">Arc Max Headphones</div><div class="idline">ID: <span class="product-id" data-full-id="4827319654">48273196</span></div><div class="bottom"><div class="price">$149.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="90764213" data-name="Pulse Pro Watch" data-price="199" data-img="assets/watch.jpg">
+        <img class="photo" src="assets/watch.jpg"><div class="content"><div class="name">Pulse Pro Watch</div><div class="idline">ID: <span class="product-id" data-full-id="90764213">90764213</span></div><div class="bottom"><div class="price">$199.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="33651847" data-name="Nova Game Controller" data-price="69" data-img="assets/controller.jpg">
+        <img class="photo" src="assets/controller.jpg"><div class="content"><div class="name">Nova Game Controller</div><div class="idline">ID: <span class="product-id" data-full-id="33651847">33651847</span></div><div class="bottom"><div class="price">$69.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="77592340" data-name="Frame Compact Camera" data-price="549" data-img="assets/camera.jpg">
+        <img class="photo" src="assets/camera.jpg"><div class="content"><div class="name">Frame Compact Camera</div><div class="idline">ID: <span class="product-id" data-full-id="77592340">77592340</span></div><div class="bottom"><div class="price">$549.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="55837421" data-name="Beat Go Speaker" data-price="89" data-img="assets/speaker.jpg">
+        <img class="photo" src="assets/speaker.jpg"><div class="content"><div class="name">Beat Go Speaker</div><div class="idline">ID: <span class="product-id" data-full-id="55837421">55837421</span></div><div class="bottom"><div class="price">$89.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="99127466" data-name="Vertex RGB Keyboard" data-price="129" data-img="assets/keyboard.jpg">
+        <img class="photo" src="assets/keyboard.jpg"><div class="content"><div class="name">Vertex RGB Keyboard</div><div class="idline">ID: <span class="product-id" data-full-id="99127466">99127466</span></div><div class="bottom"><div class="price">$129.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="23876455" data-name="AirPods Sound" data-price="179" data-img="assets/earbuds.jpg">
+        <img class="photo" src="assets/earbuds.jpg"><div class="content"><div class="name">AirPods Sound</div><div class="idline">ID: <span class="product-id" data-full-id="23876455">23876455</span></div><div class="bottom"><div class="price">$179.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="84629107" data-name="Luma Mini Projector" data-price="239" data-img="assets/projector.jpg">
+        <img class="photo" src="assets/projector.jpg"><div class="content"><div class="name">Luma Mini Projector</div><div class="idline">ID: <span class="product-id" data-full-id="84629107">84629107</span></div><div class="bottom"><div class="price">$239.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="66483021" data-name="Voyage Backpack" data-price="109" data-img="assets/backpack.jpg">
+        <img class="photo" src="assets/backpack.jpg"><div class="content"><div class="name">Voyage Backpack</div><div class="idline">ID: <span class="product-id" data-full-id="66483021">66483021</span></div><div class="bottom"><div class="price">$109.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+    </section>
+
+    <section class="grid panel hidden" data-tab="1">
+      <article class="card" data-id="12049387" data-name="Fold Travel Stand" data-price="41" data-img="assets/projector.jpg">
+        <img class="photo" src="assets/projector.jpg"><div class="content"><div class="name">Fold Travel Stand</div><div class="idline">ID: <span class="product-id" data-full-id="12049387">12049387</span></div><div class="bottom"><div class="price">$41.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="48273196" data-name="Arc Pocket Speaker" data-price="69" data-img="assets/speaker.jpg">
+        <img class="photo" src="assets/speaker.jpg"><div class="content"><div class="name">Arc Pocket Speaker</div><div class="idline">ID: <span class="product-id" data-full-id="48273196">48273196</span></div><div class="bottom"><div class="price">$69.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="9365172840" data-name="Core Compact Camera" data-price="329" data-img="assets/camera.jpg">
+        <img class="photo" src="assets/camera.jpg"><div class="content"><div class="name">Core Compact Camera</div><div class="idline">ID: <span class="product-id" data-full-id="9365172840">93651728</span></div><div class="bottom"><div class="price">$329.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="44328170" data-name="Pebble Charge Pad" data-price="46" data-img="assets/earbuds.jpg">
+        <img class="photo" src="assets/earbuds.jpg"><div class="content"><div class="name">Pebble Charge Pad</div><div class="idline">ID: <span class="product-id" data-full-id="44328170">44328170</span></div><div class="bottom"><div class="price">$46.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="8084157392" data-name="Compact RGB Keyboard" data-price="99" data-img="assets/keyboard.jpg">
+        <img class="photo" src="assets/keyboard.jpg"><div class="content"><div class="name">Compact RGB Keyboard</div><div class="idline">ID: <span class="product-id" data-full-id="8084157392">80841573</span></div><div class="bottom"><div class="price">$99.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="72541068" data-name="Metro Daypack" data-price="86" data-img="assets/backpack.jpg">
+        <img class="photo" src="assets/backpack.jpg"><div class="content"><div class="name">Metro Daypack</div><div class="idline">ID: <span class="product-id" data-full-id="72541068">72541068</span></div><div class="bottom"><div class="price">$86.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="61703542" data-name="Nova Lite Controller" data-price="59" data-img="assets/controller.jpg">
+        <img class="photo" src="assets/controller.jpg"><div class="content"><div class="name">Nova Lite Controller</div><div class="idline">ID: <span class="product-id" data-full-id="61703542">61703542</span></div><div class="bottom"><div class="price">$59.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="4096281357" data-name="Pulse Mini Watch" data-price="149" data-img="assets/watch.jpg">
+        <img class="photo" src="assets/watch.jpg"><div class="content"><div class="name">Pulse Mini Watch</div><div class="idline">ID: <span class="product-id" data-full-id="4096281357">40962813</span></div><div class="bottom"><div class="price">$149.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="31804652" data-name="Studio Headphones" data-price="119" data-img="assets/headphones.jpg">
+        <img class="photo" src="assets/headphones.jpg"><div class="content"><div class="name">Studio Headphones</div><div class="idline">ID: <span class="product-id" data-full-id="31804652">31804652</span></div><div class="bottom"><div class="price">$119.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+    </section>
+
+    <section class="grid panel hidden" data-tab="2">
+      <article class="card" data-id="67190543" data-name="Voyage Carry Pack" data-price="98" data-img="assets/backpack.jpg">
+        <img class="photo" src="assets/backpack.jpg"><div class="content"><div class="name">Voyage Carry Pack</div><div class="idline">ID: <span class="product-id" data-full-id="67190543">67190543</span></div><div class="bottom"><div class="price">$98.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="5538192047" data-name="Beam Projector" data-price="219" data-img="assets/projector.jpg">
+        <img class="photo" src="assets/projector.jpg"><div class="content"><div class="name">Beam Projector</div><div class="idline">ID: <span class="product-id" data-full-id="5538192047">55381920</span></div><div class="bottom"><div class="price">$219.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="31974652" data-name="Halo Watch" data-price="169" data-img="assets/watch.jpg">
+        <img class="photo" src="assets/watch.jpg"><div class="content"><div class="name">Halo Watch</div><div class="idline">ID: <span class="product-id" data-full-id="31974652">31974652</span></div><div class="bottom"><div class="price">$169.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="2406819357" data-name="Frame Street Camera" data-price="429" data-img="assets/camera.jpg">
+        <img class="photo" src="assets/camera.jpg"><div class="content"><div class="name">Frame Street Camera</div><div class="idline">ID: <span class="product-id" data-full-id="2406819357">24068193</span></div><div class="bottom"><div class="price">$429.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="71930584" data-name="Vertex Mini Keyboard" data-price="89" data-img="assets/keyboard.jpg">
+        <img class="photo" src="assets/keyboard.jpg"><div class="content"><div class="name">Vertex Mini Keyboard</div><div class="idline">ID: <span class="product-id" data-full-id="71930584">71930584</span></div><div class="bottom"><div class="price">$89.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="65038127" data-name="Nova Travel Controller" data-price="63" data-img="assets/controller.jpg">
+        <img class="photo" src="assets/controller.jpg"><div class="content"><div class="name">Nova Travel Controller</div><div class="idline">ID: <span class="product-id" data-full-id="65038127">65038127</span></div><div class="bottom"><div class="price">$63.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="8402157639" data-name="Air Sound Buds" data-price="149" data-img="assets/earbuds.jpg">
+        <img class="photo" src="assets/earbuds.jpg"><div class="content"><div class="name">Air Sound Buds</div><div class="idline">ID: <span class="product-id" data-full-id="8402157639">84021576</span></div><div class="bottom"><div class="price">$149.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="52081463" data-name="Arc Home Speaker" data-price="92" data-img="assets/speaker.jpg">
+        <img class="photo" src="assets/speaker.jpg"><div class="content"><div class="name">Arc Home Speaker</div><div class="idline">ID: <span class="product-id" data-full-id="52081463">52081463</span></div><div class="bottom"><div class="price">$92.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+      <article class="card" data-id="78021546" data-name="Arc Lite Headphones" data-price="109" data-img="assets/headphones.jpg">
+        <img class="photo" src="assets/headphones.jpg"><div class="content"><div class="name">Arc Lite Headphones</div><div class="idline">ID: <span class="product-id" data-full-id="78021546">78021546</span></div><div class="bottom"><div class="price">$109.00</div><button class="add" onclick="add(this)">🛒 &nbsp;Add to cart</button></div></div>
+      </article>
+    </section>
+  </main>
+
+  <aside class="cartPanel" id="cartPanel">
+    <div class="cartHead">🛒 &nbsp;Your Cart</div>
+    <div class="cartBody" id="cartBody"></div>
+  </aside>
+</div>
+
+<div class="overlay hidden" id="overlay">
+  <div class="ticket">
+    <h2>LUMA SHOP</h2>
+    <div class="ticketSub">ONLINE PURCHASE RECEIPT</div>
+    <hr>
+    <div class="ticketRow"><span>Receipt</span><span id="receiptNo"></span></div>
+    <div class="ticketRow"><span>Date</span><span id="receiptDate"></span></div>
+    <hr>
+    <div id="receiptItems"></div>
+    <hr>
+    <div class="ticketRow"><b>TOTAL</b><b id="receiptTotal"></b></div>
+    <div class="ticketSub" style="margin-top:18px">Thank you for shopping with Luma.</div>
+    <button onclick="document.getElementById('overlay').classList.add('hidden')">Close receipt</button>
+  </div>
+</div>
+
+<div class="operator"><a href="operator.html">Operator log</a></div>
+
+<script>
+const cart=[];
+const KEY="luma_shop_events";
+function logEvent(type,details={}){
+  const arr=JSON.parse(localStorage.getItem(KEY)||"[]");
+  arr.push({time:new Date().toISOString(),type,details});
+  localStorage.setItem(KEY,JSON.stringify(arr));
+}
+document.querySelectorAll(".product-id").forEach(el=>{
+  el.addEventListener("mouseenter",()=>logEvent("id_hovered",{visibleId:el.textContent.trim(),fullId:el.dataset.fullId}));
+});
+function showTab(i,b){
+  document.querySelectorAll(".panel").forEach(p=>p.classList.add("hidden"));
+  document.querySelector('.panel[data-tab="'+i+'"]').classList.remove("hidden");
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  b.classList.add("active");
+  logEvent("tab_opened",{tab:i});
+}
+function add(btn){
+  const c=btn.closest(".card");
+  const item={id:c.dataset.id,name:c.dataset.name,price:Number(c.dataset.price),img:c.dataset.img};
+  cart.push(item);
+  logEvent("product_added_to_cart",{id:item.id,name:item.name});
+  renderCart();
+}
+function renderCart(){
+  document.getElementById("badge").textContent=cart.length;
+  const body=document.getElementById("cartBody");
+  if(!cart.length){
+    body.innerHTML='<div class="empty"><div class="emptyIcon">🛒</div><strong>Your cart is empty</strong><div>Add some products to get started.</div></div>';
+    return;
+  }
+  body.innerHTML=cart.map(x=>
+    '<div class="cartItem"><img class="cartThumb" src="'+x.img+'"><div class="cartInfo"><b>'+x.name+'</b><span class="small">1 item</span></div><div class="cartPrice">$'+x.price.toFixed(2)+'</div></div>'
+  ).join("")+
+  '<div class="total"><span>Total</span><span>$'+cart.reduce((a,b)=>a+b.price,0).toFixed(2)+'</span></div>'+
+  '<button class="checkout" onclick="checkout()">Checkout</button>';
+}
+function checkout(){
+  if(!cart.length)return;
+  const no="LM-"+Math.floor(100000+Math.random()*900000);
+  document.getElementById("receiptNo").textContent=no;
+  document.getElementById("receiptDate").textContent=new Date().toLocaleString();
+  document.getElementById("receiptItems").innerHTML=cart.map(x=>
+    '<div style="margin:14px 0">'+
+      '<div class="ticketRow"><b>'+x.name+'</b><b>$'+x.price.toFixed(2)+'</b></div>'+
+      '<div style="font-size:11px;color:#777">FULL PRODUCT ID</div>'+
+      '<div class="ticketId">'+x.id+'</div>'+
+    '</div>'
+  ).join("");
+  document.getElementById("receiptTotal").textContent="$"+cart.reduce((a,b)=>a+b.price,0).toFixed(2);
+  logEvent("order_confirmed",{receipt:no,items:cart.map(x=>({id:x.id,name:x.name,price:x.price}))});
+  document.getElementById("overlay").classList.remove("hidden");
+}
+function scrollToCart(){document.getElementById("cartPanel").scrollIntoView({behavior:"smooth"})}
+logEvent("page_view",{page:"shop"});
+renderCart();
+</script>
+</body>
+</html>
